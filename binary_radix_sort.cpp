@@ -35,6 +35,17 @@ void binaryRadixSort(unsigned char* A, int size) {
         printBinary(A[i]);
         std::cout << std::endl;
     }
+
+    for (int k = 0; k < 8; k++) {
+        countingSortByBit(A, B, size, k);
+    }
+
+    std::cout << "Binarna predstavitev: " << std::endl;
+    for (int i = 0; i < size; i++) {
+        std::cout << (int)A[i] << " = ";
+        printBinary(A[i]);
+        std::cout << std::endl;
+    }
     
     delete[] B;
 }
