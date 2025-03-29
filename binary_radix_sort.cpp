@@ -1,4 +1,8 @@
 #include <iostream>
+#include <fstream>
+#include <vector>
+
+using namespace std;
 
 void countingSortByBit(unsigned char* A, unsigned char* B, int size, int k) {
     int C[2] = {0, 0};
@@ -22,29 +26,15 @@ void countingSortByBit(unsigned char* A, unsigned char* B, int size, int k) {
 
 void printBinary(unsigned char num) {
     for (int k = 7; k >= 0; k--) {
-        std::cout << ((num >> k) & 1);
+        cout << ((num >> k) & 1);
     }
 }
 
 void binaryRadixSort(unsigned char* A, int size) {
     unsigned char* B = new unsigned char[size];
 
-    std::cout << "Binarna predstavitev: " << std::endl;
-    for (int i = 0; i < size; i++) {
-        std::cout << (int)A[i] << " = ";
-        printBinary(A[i]);
-        std::cout << std::endl;
-    }
-
     for (int k = 0; k < 8; k++) {
         countingSortByBit(A, B, size, k);
-    }
-
-    std::cout << "Binarna predstavitev: " << std::endl;
-    for (int i = 0; i < size; i++) {
-        std::cout << (int)A[i] << " = ";
-        printBinary(A[i]);
-        std::cout << std::endl;
     }
     
     delete[] B;
@@ -52,34 +42,59 @@ void binaryRadixSort(unsigned char* A, int size) {
 
 
 
-int main() {
-    int size;
-    std::cout << "Vnesite število elementov: ";
-    std::cin >> size;
+int main(int argc, char* argv[]) {
+    if (argc < 2) {
+        cerr << "Uporaba: " << argv[0] << " <vhodna datoteka>" << endl;
+        return 1;
+    }
     
-    unsigned char* A = new unsigned char[size];
+    ifstream input_file(argv[1]);
+    if (!input_file.is_open()) {
+        cerr << "napaka pri odpiranju datoteke" << argv[1] << endl;
+        return 1;
+    }
     
-    std::cout << "Vnesite " << size << " števil (0-255):" << std::endl;
-    for (int i = 0; i < size; i++) {
-        int input;
-        std::cin >> input;
-        if (input < 0 || input > 255) {
-            std::cout << "Neveljavna vrednost! Vnesite število med 0 in 255." << std::endl;
-            i--;
+    vector<unsigned char> numbers;
+    int num;
+    while (input_file >> num) {
+        if (num < 0 || num > 255) {
+            cerr << "stevilo " << num << " ni v območju 0-255" << endl;
             continue;
         }
-        A[i] = static_cast<unsigned char>(input);
+        numbers.push_back(static_cast<unsigned char>(num));
+    }
+    input_file.close();
+    
+
+    if (numbers.empty()) {
+        cerr << "v datoteki ni dobrih stevil za to" << endl;
+        return 1;
     }
     
-    std::cout << "\nOriginalno polje: ";
+    int size = numbers.size();
+    unsigned char* A = new unsigned char[size];
+    
     for (int i = 0; i < size; i++) {
-        std::cout << (int)A[i] << " ";
+        A[i] = numbers[i];
     }
-    std::cout << std::endl;
-
+     
     binaryRadixSort(A, size);
-
-
+    
+    
+    ofstream output_file("out.txt");
+    if (!output_file.is_open()) {
+        cerr << "do napake je prislo pri ustvarjanju out.txt" << endl;
+        delete[] A;
+        return 1;
+    }
+    
+    for (int i = 0; i < size; i++) {
+        output_file << static_cast<int>(A[i]);
+        if (i < size - 1) {
+            output_file << " ";
+        }
+    }
+    output_file.close();
     
     delete[] A;
     
