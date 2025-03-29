@@ -29,3 +29,25 @@ int main() {
     
     return 0;
 }
+
+
+
+void countingSortByBit(unsigned char* A, unsigned char* B, int size, int k) {
+    int C[2] = {0, 0};
+    
+    for (int i = 0; i < size; i++) {
+        bool bit = (A[i] >> k) & 1;
+        C[bit]++;
+    }
+    
+    C[1] += C[0];
+    
+    for (int i = size - 1; i >= 0; i--) {
+        bool bit = (A[i] >> k) & 1;
+        B[--C[bit]] = A[i];
+    }
+    
+    for (int i = 0; i < size; i++) {
+        A[i] = B[i];
+    }
+}
